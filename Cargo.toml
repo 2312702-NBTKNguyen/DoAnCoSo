@@ -1,0 +1,44 @@
+[workspace.package]
+license = "MIT-0"
+authors = [
+  "Nguyễn Đức Hoàng <2312622@dlu.edu.vn>",
+  "Trần Đình Việt Huy <2312635@dlu.edu.vn>",
+  "Hồ Quốc Long <2312675@dlu.edu.vn>",
+  "Nguyễn Bá Thiều Khôi Nguyên <2312702@dlu.edu.vn>"
+]
+homepage = "https://github.com/Norachann/DoAnCoSo"
+repository = "https://github.com/Norachann/DoAnCoSo.git"
+edition = "2021"
+
+[workspace]
+default-members = ["pallets", "runtime"]
+members = [
+  "node",
+  "pallets",
+  "runtime",
+]
+resolver = "2"
+
+[workspace.dependencies]
+# Crate nội bộ 
+dacs-runtime = { path = "./runtime", default-features = false }
+pallet-dacs = { path = "./pallets", default-features = false }
+
+# Thư viện nền tảng 
+polkadot-sdk = { version = "2503.0.1", default-features = false }                       #SDK chính
+codec = { version = "3.7.4", default-features = false, package = "parity-scale-codec" } #SCALE codec
+scale-info = { version = "2.11.6", default-features = false }                           #metadata type info
+futures = { version = "0.3.31" }                                                        #async - Lập trình bất đồng bộ
+futures-timer = { version = "3.0.2" }
+jsonrpsee = { version = "0.24.3" }                                                      #JSON-RPC cho giao tiếp mạng
+serde_json = { version = "1.0.132", default-features = false }                          #Xử lý JSON
+clap = { version = "4.5.13" }                                                           #CLI - Xử lý tham số dòng lệnh
+
+[profile.release]
+opt-level = 3
+panic = "unwind"
+
+[profile.production]
+codegen-units = 1
+inherits = "release"
+lto = true
