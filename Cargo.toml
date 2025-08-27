@@ -11,10 +11,10 @@ repository = "https://github.com/Norachann/DoAnCoSo.git"
 edition = "2021"
 
 [workspace]
-default-members = ["pallets", "runtime"]
+default-members = ["pallets/demo_pallet", "runtime"]
 members = [
   "node",
-  "pallets",
+  "pallets/demo_pallet",
   "runtime",
 ]
 resolver = "2"
@@ -22,7 +22,7 @@ resolver = "2"
 [workspace.dependencies]
 # Crate nội bộ 
 dacs-runtime = { path = "./runtime", default-features = false }
-pallet-dacs = { path = "./pallets", default-features = false }
+dacs-demo_pallet = { path = "./pallets/demo_pallet", default-features = false }
 
 # Thư viện nền tảng 
 polkadot-sdk = { version = "2503.0.1", default-features = false }                       #SDK chính
