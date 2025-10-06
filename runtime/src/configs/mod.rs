@@ -289,7 +289,3 @@ impl pallet_collator_selection::Config for Runtime {
 	type WeightInfo = ();
 }
 
-impl demo_pallet::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type WeightInfo = demo_pallet::weights::SubstrateWeight<Runtime>;
-}

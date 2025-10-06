@@ -283,8 +283,6 @@ mod runtime {
 	#[runtime::pallet_index(33)]
 	pub type MessageQueue = pallet_message_queue;
 
-	#[runtime::pallet_index(50)]
-	pub type DemoPallet = demo_pallet;
 }
 
 #[docify::export(register_validate_block)]

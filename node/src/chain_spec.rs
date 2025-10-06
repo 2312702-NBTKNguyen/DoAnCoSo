@@ -67,7 +67,7 @@ pub fn local_chain_spec() -> ChainSpec {
 	.with_id("local_testnet")
 	.with_chain_type(ChainType::Local)
 	.with_genesis_config_preset_name(sc_chain_spec::LOCAL_TESTNET_RUNTIME_PRESET)
-	.with_protocol_id("demo_pallet-local")
+	.with_protocol_id("dacs-local")
 	.with_properties(properties)
 	.build()
 }

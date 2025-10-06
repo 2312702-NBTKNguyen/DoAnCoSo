@@ -11,17 +11,12 @@ repository = "https://github.com/Norachann/DoAnCoSo.git"
 edition = "2021"
 
 [workspace]
-default-members = ["node", "pallets/demo_pallet", "runtime"]
-members = [
-    "node",
-    "pallets/demo_pallet",
-    "runtime",
-]
+default-members = ["node", "runtime"]
+members = ["node", "runtime"]
 resolver = "2"
 
 [workspace.dependencies]
 dacs-runtime = { path = "./runtime", default-features = false }
-demo_pallet = { path = "./pallets/demo_pallet", default-features = false }
 
 clap = { version = "4.5.13" }
 color-print = { version = "0.3.4" }
