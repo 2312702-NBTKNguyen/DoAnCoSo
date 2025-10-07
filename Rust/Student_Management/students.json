@@ -1,0 +1,37 @@
+[
+  {
+    "id": "211001",
+    "name": "Nguyen Van A",
+    "gender": "Nam",
+    "birth_date": "15/08/2003",
+    "address": "Ha Noi"
+  },
+  {
+    "id": "211002",
+    "name": "Tran Thi B",
+    "gender": "Nu",
+    "birth_date": "20/05/2003",
+    "address": "Da Nang"
+  },
+  {
+    "id": "201005",
+    "name": "Le Van C",
+    "gender": "Nam",
+    "birth_date": "30/11/2002",
+    "address": "TP. Ho Chi Minh"
+  },
+  {
+    "id": "221010",
+    "name": "Pham Thi D",
+    "gender": "Nu",
+    "birth_date": "01/01/2004",
+    "address": "Hai Phong"
+  },
+  {
+    "id": "201008",
+    "name": "Hoang Van An",
+    "gender": "Nam",
+    "birth_date": "10/09/2002",
+    "address": "Can Tho"
+  }
+]
