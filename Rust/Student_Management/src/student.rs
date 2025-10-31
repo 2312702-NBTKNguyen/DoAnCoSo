@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::cmp::max;
 use std::collections::HashMap;
 use std::io::{self, Write};
+use chrono::NaiveDate;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Student {
@@ -85,11 +86,17 @@ pub fn add_student(students: &mut Vec<Student>) {
     io::stdout().flush().unwrap();
     io::stdin().read_line(&mut address).expect("Failed to read line");
 
+    let birth = birth_date.trim();
+    if NaiveDate::parse_from_str(birth, "%d/%m/%Y").is_err() {
+        println!("=> Ngày sinh không hợp lệ. Định dạng đúng: dd/mm/yyyy");
+        return;
+    }
+
     let new_student = Student {
         id: id.trim().to_string(),
         name: name.trim().to_string(),
         gender: gender.trim().to_string(),
-        birth_date: birth_date.trim().to_string(),
+        birth_date: birth.to_string(),
         address: address.trim().to_string(),
     };
     students.push(new_student);
@@ -166,9 +173,14 @@ pub fn sort_students(students: &mut Vec<Student>, choice: &str) {
         "1" => students.sort_by(|a, b| a.id.cmp(&b.id)),
         "2" => students.sort_by(|a, b| a.name.cmp(&b.name)),
         "3" => students.sort_by(|a, b| {
-            let date_a = a.birth_date.split('/').rev().collect::<Vec<_>>().join("");
-            let date_b = b.birth_date.split('/').rev().collect::<Vec<_>>().join("");
-            date_a.cmp(&date_b)
+            let da = NaiveDate::parse_from_str(&a.birth_date, "%d/%m/%Y");
+            let db = NaiveDate::parse_from_str(&b.birth_date, "%d/%m/%Y");
+            match (da.ok(), db.ok()) {
+                (Some(da), Some(db)) => da.cmp(&db),
+                (Some(_), None) => std::cmp::Ordering::Less,
+                (None, Some(_)) => std::cmp::Ordering::Greater,
+                (None, None) => std::cmp::Ordering::Equal,
+            }
         }),
         _ => return,
     }

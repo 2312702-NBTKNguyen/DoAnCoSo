@@ -1,6 +1,4 @@
-mod menu;
-mod student;
-mod file_handler;
+use student_management::menu;
 
 fn main() {
     menu::run();

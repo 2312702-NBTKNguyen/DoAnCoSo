@@ -5,16 +5,16 @@ use std::process::Command;
 
 fn clear_screen() {
     if cfg!(target_os = "windows") {
-        Command::new("cmd").args(&["/C", "cls"]).status().unwrap();
+        let _ = Command::new("cmd").args(&["/C", "cls"]).status();
     } else {
-        Command::new("sh").args(&["-c", "clear"]).status().unwrap();
+        let _ = Command::new("sh").args(&["-c", "clear"]).status();
     }
 }
 
 fn pause() {
     print!("\nNhấn Enter để tiếp tục...");
-    io::stdout().flush().unwrap();
-    io::stdin().read_line(&mut String::new()).unwrap();
+    let _ = io::stdout().flush();
+    let _ = io::stdin().read_line(&mut String::new());
 }
 
 fn display_menu() {
@@ -42,8 +42,8 @@ fn save_data_menu(students: &Vec<Student>) {
     print!("Chọn định dạng file: ");
     
     let mut choice = String::new();
-    io::stdout().flush().unwrap();
-    io::stdin().read_line(&mut choice).expect("Failed to read line");
+    let _ = io::stdout().flush();
+    if io::stdin().read_line(&mut choice).is_err() { return; }
 
     match choice.trim() {
         "1" => if file_handler::save_to_txt(students, "students.txt").is_ok() { println!("=> Lưu file students.txt thành công!"); },
@@ -63,8 +63,8 @@ fn sort_menu(students: &mut Vec<Student>) {
     print!("Chọn tiêu chí: ");
     
     let mut choice = String::new();
-    io::stdout().flush().unwrap();
-    io::stdin().read_line(&mut choice).expect("Failed to read line");
+    let _ = io::stdout().flush();
+    if io::stdin().read_line(&mut choice).is_err() { return; }
     student::sort_students(students, choice.trim());
 }
 
@@ -80,10 +80,10 @@ pub fn run() {
 
         match choice.trim() {
             "1" => {
-                print!("Nhập tên file cần đọc (ví dụ: students.txt, data.json): ");
-                io::stdout().flush().unwrap();
+                print!("Nhập tên file cần đọc (ví dụ: students.txt, students.json): ");
+        let _ = io::stdout().flush();
                 let mut filename = String::new();
-                io::stdin().read_line(&mut filename).unwrap();
+        if io::stdin().read_line(&mut filename).is_err() { return; }
                 match file_handler::load_students_from_file(filename.trim()) {
                     Ok(loaded_students) => {
                         students = loaded_students;

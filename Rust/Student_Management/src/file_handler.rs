@@ -1,12 +1,25 @@
 use crate::student::Student;
 use serde::{de::DeserializeOwned, Serialize};
-use std::fs::File;
-use std::io::{self, BufRead, BufReader, Write};
-use std::path::Path;
+use std::fs::{File, create_dir_all};
+use std::io::{self, BufRead, BufReader, Write, BufWriter};
+use std::path::{Path, PathBuf};
 use rust_xlsxwriter::{Format, FormatAlign, Workbook};
 
+fn resolve_data_path(filename: &str) -> io::Result<PathBuf> {
+    let path = Path::new(filename);
+    if path.components().count() > 1 || path.exists() {
+        return Ok(path.to_path_buf());
+    }
+    let data_dir = Path::new("data");
+    if !data_dir.exists() {
+        create_dir_all(data_dir)?;
+    }
+    Ok(data_dir.join(filename))
+}
+
 fn read_from_txt(filename: &str) -> io::Result<Vec<Student>> {
-    let file = File::open(filename)?;
+    let path = resolve_data_path(filename)?;
+    let file = File::open(path)?;
     let reader = BufReader::new(file);
     let mut students = Vec::new();
     for line in reader.lines() {
@@ -26,7 +39,8 @@ fn read_from_txt(filename: &str) -> io::Result<Vec<Student>> {
 }
 
 fn read_from_json<T: DeserializeOwned>(filename: &str) -> io::Result<Vec<T>> {
-    let file = File::open(filename)?;
+    let path = resolve_data_path(filename)?;
+    let file = File::open(path)?;
     let reader = BufReader::new(file);
     let data = serde_json::from_reader(reader)
         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
@@ -45,7 +59,9 @@ pub fn load_students_from_file(filename: &str) -> io::Result<Vec<Student>> {
 }
 
 pub fn save_to_txt(students: &Vec<Student>, filename: &str) -> io::Result<()> {
-    let mut file = File::create(filename)?;
+    let path = resolve_data_path(filename)?;
+    if let Some(parent) = path.parent() { if !parent.exists() { create_dir_all(parent)?; } }
+    let mut file = BufWriter::new(File::create(path)?);
     for student in students {
         writeln!(file, "{},{},{},{},{}", student.id, student.name, student.gender, student.birth_date, student.address)?;
     }
@@ -53,8 +69,11 @@ pub fn save_to_txt(students: &Vec<Student>, filename: &str) -> io::Result<()> {
 }
 
 pub fn save_to_json<T: Serialize>(data: &Vec<T>, filename: &str) -> io::Result<()> {
-    let json_string = serde_json::to_string_pretty(data).unwrap();
-    let mut file = File::create(filename)?;
+    let path = resolve_data_path(filename)?;
+    if let Some(parent) = path.parent() { if !parent.exists() { create_dir_all(parent)?; } }
+    let json_string = serde_json::to_string_pretty(data)
+        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+    let mut file = BufWriter::new(File::create(path)?);
     file.write_all(json_string.as_bytes())
 }
 
@@ -69,12 +88,15 @@ pub fn save_to_xml<T: Serialize>(data: &Vec<T>, root_element: &str, filename: &s
         }
     }
     xml_string.push_str(&format!("</{}>\n", root_element));
-    
-    let mut file = File::create(filename)?;
+    let path = resolve_data_path(filename)?;
+    if let Some(parent) = path.parent() { if !parent.exists() { create_dir_all(parent)?; } }
+    let mut file = BufWriter::new(File::create(path)?);
     file.write_all(xml_string.as_bytes())
 }
 
 pub fn save_students_to_excel(students: &Vec<Student>, filename: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let path = resolve_data_path(filename)?;
+    if let Some(parent) = path.parent() { if !parent.exists() { create_dir_all(parent)?; } }
     let mut workbook = Workbook::new();
     let worksheet = workbook.add_worksheet();
     let header_format = Format::new().set_bold().set_align(FormatAlign::Center);
@@ -95,6 +117,6 @@ pub fn save_students_to_excel(students: &Vec<Student>, filename: &str) -> Result
     }
 
     worksheet.autofit();
-    workbook.save(filename)?;
+    workbook.save(path)?;
     Ok(())
 }

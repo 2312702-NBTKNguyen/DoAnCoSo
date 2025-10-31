@@ -1,0 +1,5 @@
+211001,Nguyen Van A,Nam,15/08/2003,Ha Noi
+211002,Tran Thi B,Nu,20/05/2003,Da Nang
+201005,Le Van C,Nam,30/11/2002,TP. Ho Chi Minh
+221010,Pham Thi D,Nu,01/01/2004,Hai Phong
+201008,Hoang Van An,Nam,10/09/2002,Can Tho
