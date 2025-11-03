@@ -38,7 +38,7 @@ use xcm::latest::prelude::BodyId;
 // Local module imports
 use super::{
 	weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight},
-	AccountId, Aura, Balance, Balances, Block, BlockNumber, CollatorSelection, ConsensusHook, Hash,
+	AccountId, Aura, Balance, Balances, Block, BlockNumber, Blog, CollatorSelection, ConsensusHook, Hash,
 	MessageQueue, Nonce, PalletInfo, ParachainSystem, Runtime, RuntimeCall, RuntimeEvent,
 	RuntimeFreezeReason, RuntimeHoldReason, RuntimeOrigin, RuntimeTask, Session, SessionKeys,
 	System, WeightToFee, XcmpQueue, AVERAGE_ON_INITIALIZE_RATIO, EXISTENTIAL_DEPOSIT, HOURS,
@@ -287,5 +287,33 @@ impl pallet_collator_selection::Config for Runtime {
 	type ValidatorIdOf = pallet_collator_selection::IdentityCollator;
 	type ValidatorRegistration = Session;
 	type WeightInfo = ();
+}
+
+// Blog Pallet Configuration
+parameter_types! {
+	pub const BlogPalletId: PalletId = PalletId(*b"blogpall");
+	pub const PostCreationFee: Balance = 10 * MICRO_UNIT;
+	pub const CommentCreationFee: Balance = 1 * MICRO_UNIT;
+	pub const MaxTitleLength: u32 = 200;
+	pub const MaxContentLength: u32 = 10_000;
+	pub const MaxCommentLength: u32 = 1_000;
+	pub const MaxCommentsPerPost: u32 = 100;
+	pub const MaxTagsPerPost: u32 = 10;
+	pub const MaxTagLength: u32 = 50;
+}
+
+impl blog_pallet::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Currency = Balances;
+	type PalletId = BlogPalletId;
+	type PostCreationFee = PostCreationFee;
+	type CommentCreationFee = CommentCreationFee;
+	type MaxTitleLength = MaxTitleLength;
+	type MaxContentLength = MaxContentLength;
+	type MaxCommentLength = MaxCommentLength;
+	type MaxCommentsPerPost = MaxCommentsPerPost;
+	type MaxTagsPerPost = MaxTagsPerPost;
+	type MaxTagLength = MaxTagLength;
+	type WeightInfo = blog_pallet::weights::SubstrateWeight<Runtime>;
 }
 

@@ -16,6 +16,7 @@ docify = { workspace = true }
 substrate-wasm-builder = { optional = true, workspace = true, default-features = true }
 
 [dependencies]
+blog-pallet = { path = "../pallets/blog-pallet", default-features = false }
 codec = { features = ["derive"], workspace = true }
 cumulus-pallet-parachain-system.workspace = true
 docify = { workspace = true }
@@ -30,6 +31,7 @@ smallvec = { workspace = true, default-features = true }
 [features]
 default = ["std"]
 std = [
+	"blog-pallet/std",
 	"codec/std",
 	"cumulus-pallet-parachain-system/std",
 	"log/std",
@@ -40,6 +42,7 @@ std = [
 ]
 
 runtime-benchmarks = [
+	"blog-pallet/runtime-benchmarks",
 	"cumulus-pallet-parachain-system/runtime-benchmarks",
 	"hex-literal",
 	"polkadot-sdk/runtime-benchmarks",

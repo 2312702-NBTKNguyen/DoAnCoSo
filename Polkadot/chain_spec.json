@@ -95,14 +95,15 @@
       }
     }
   },
-  "id": "custom",
-  "name": "Custom",
+  "id": "dacs",
+  "name": "Đồ án cơ sở - Polkadot",
   "para_id": 1000,
   "properties": {
     "tokenDecimals": 12,
-    "tokenSymbol": "UNIT"
+    "tokenSymbol": "UNIT",
+    "ss58Format": 42
   },
-  "protocolId": null,
-  "relay_chain": "paseo",
+  "protocolId": "dacs-local",
+  "relay_chain": "rococo-local",
   "telemetryEndpoints": null
 }
