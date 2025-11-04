@@ -12,7 +12,11 @@ edition = "2021"
 
 [workspace]
 default-members = ["node", "runtime"]
-members = ["node", "runtime"]
+members = [
+  "node",
+  "runtime",
+  "pallets/blog-pallet",
+]
 resolver = "2"
 
 [workspace.dependencies]

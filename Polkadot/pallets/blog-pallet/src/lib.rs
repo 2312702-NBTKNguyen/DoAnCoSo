@@ -1,25 +1,25 @@
 //! # Blog Pallet
-//! 
+//!
 //! Pallet quản lý blog phi tập trung trên blockchain Substrate.
 //! Cho phép người dùng tạo, chỉnh sửa, xóa bài viết blog và quản lý bình luận.
-//! 
+//!
 //! ## Tính năng chính:
 //! ### Quản lý bài viết:
 //! - Tạo bài viết blog mới
 //! - Cập nhật bài viết đã tồn tại
 //! - Xóa bài viết (soft delete)
 //! - Thêm tags cho bài viết
-//! 
+//!
 //! ### Quản lý bình luận:
 //! - Thêm bình luận vào bài viết
 //! - Cập nhật bình luận
 //! - Xóa bình luận
-//! 
+//!
 //! ### Tương tác xã hội:
 //! - Like/Unlike bài viết và bình luận
 //! - Bookmark bài viết yêu thích
 //! - Follow/Unfollow tác giả
-//! 
+//!
 //! ### Quản lý quyền truy cập:
 //! - Chỉ tác giả mới có thể chỉnh sửa/xóa bài viết/bình luận của mình
 //! - Phí giao dịch cho việc tạo bài viết và bình luận
@@ -37,7 +37,7 @@ use frame_support::{
 		ConstU32, Currency, ExistenceRequirement, Get, IsType, Len, ReservableCurrency,
 	},
 	BoundedVec,
-	PalletId, 
+	PalletId,
 	weights::Weight,
 };
 use frame_system::pallet_prelude::*;
@@ -50,6 +50,8 @@ use sp_std::vec::Vec;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 #[cfg(test)]
+mod mock;
+#[cfg(test)]
 mod tests;
 pub mod weights;
 
@@ -59,7 +61,7 @@ pub use weights::*;
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	
+
 	// Import ensure_signed
 	use frame_system::ensure_signed;
 
@@ -457,7 +459,7 @@ pub mod pallet {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		/// Tạo bài viết blog mới
-		/// 
+		///
 		/// Yêu cầu phí từ tác giả để tạo bài viết.
 		#[pallet::call_index(0)]
 		#[pallet::weight(T::WeightInfo::create_post(
@@ -507,7 +509,7 @@ pub mod pallet {
 			};
 
 			Posts::<T>::insert(post_id, &post);
-			
+
 			// Cập nhật danh sách bài viết của tác giả
 			AuthorPosts::<T>::try_mutate(&author, |posts| -> DispatchResult {
 				posts.try_push(post_id)
@@ -525,7 +527,7 @@ pub mod pallet {
 		}
 
 		/// Cập nhật bài viết đã tồn tại
-		/// 
+		///
 		/// Chỉ tác giả của bài viết mới có thể cập nhật.
 		#[pallet::call_index(1)]
 		#[pallet::weight(T::WeightInfo::update_post(
@@ -580,7 +582,7 @@ pub mod pallet {
 		}
 
 		/// Xóa bài viết
-		/// 
+		///
 		/// Chỉ tác giả của bài viết mới có thể xóa.
 		#[pallet::call_index(2)]
 		#[pallet::weight(T::WeightInfo::delete_post())]
@@ -665,7 +667,7 @@ pub mod pallet {
 			};
 
 			Comments::<T>::insert(comment_id, &comment);
-			
+
 			// Cập nhật danh sách bình luận của bài viết
 			PostComments::<T>::try_mutate(&post_id, |comments| -> DispatchResult {
 				comments.try_push(comment_id)
@@ -765,7 +767,7 @@ pub mod pallet {
 			ensure!(!post.is_deleted, Error::<T>::PostDeleted);
 
 			let already_liked = PostLikedBy::<T>::get(&post_id, &user);
-			
+
 			if already_liked {
 				// Unlike
 				PostLikedBy::<T>::remove(&post_id, &user);
@@ -808,7 +810,7 @@ pub mod pallet {
 			ensure!(!comment.is_deleted, Error::<T>::CommentNotFound);
 
 			let already_liked = CommentLikedBy::<T>::get(&comment_id, &user);
-			
+
 			if already_liked {
 				// Unlike
 				CommentLikedBy::<T>::remove(&comment_id, &user);
@@ -1006,7 +1008,7 @@ pub mod pallet {
 		/// Thu phí từ tài khoản
 		fn charge_fee(account: &T::AccountId, fee: BalanceOf<T>) -> DispatchResult {
 			let pallet_account: T::AccountId = T::PalletId::get().into_account_truncating();
-			
+
 			T::Currency::transfer(
 				account,
 				&pallet_account,
