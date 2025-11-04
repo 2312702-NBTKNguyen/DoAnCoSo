@@ -6,8 +6,8 @@ authors = [
   "2312675 - Hồ Quốc Long <2312675@dlu.edu.vn>",
   "2312702 - Nguyễn Bá Thiều Khôi Nguyên <2312702@dlu.edu.vn>"
 ]
-homepage = "https://github.com/Norachann/DoAnCoSo"
-repository = "https://github.com/Norachann/DoAnCoSo.git"
+homepage = "https://github.com/2312702-NBTKNguyen/DoAnCoSo"
+repository = "https://github.com/2312702-NBTKNguyen/DoAnCoSo.git"
 edition = "2021"
 
 [workspace]
@@ -45,4 +45,3 @@ panic = "unwind"
 codegen-units = 1
 inherits = "release"
 lto = true
-

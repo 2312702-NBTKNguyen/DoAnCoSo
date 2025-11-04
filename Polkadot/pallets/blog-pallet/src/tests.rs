@@ -2,116 +2,124 @@
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use crate::pallet::*;
-	use frame_support::{
-		assert_noop, assert_ok,
-		parameter_types,
-		traits::{ConstU128, ConstU32, Currency, GenesisBuild, ReservableCurrency},
-		PalletId,
-	};
-	use frame_system as system;
-	use sp_core::H256;
-	use sp_runtime::{
-		traits::{BlakeTwo256, IdentityLookup},
-		BuildStorage, Perbill,
-	};
+        use crate::pallet::*;
+        use crate as blog_pallet;
+        use frame_support::{
+                assert_noop, assert_ok,
+                parameter_types,
+                traits::{ConstU128, ConstU32, ConstU64},
+                PalletId,
+        };
+        use sp_core::H256;
+        use sp_runtime::{
+                traits::{BlakeTwo256, IdentityLookup},
+                BuildStorage,
+        };
 
-	type Block = frame_system::mocking::MockBlock<Test>;
+        type Block = frame_system::mocking::MockBlock<Test>;
 
-	frame_support::construct_runtime!(
-		pub enum Test {
-			System: frame_system,
-			Balances: pallet_balances,
-			Blog: blog_pallet,
-		}
-	);
+        frame_support::construct_runtime!(
+                pub enum Test {
+                        System: frame_system,
+                        Balances: pallet_balances,
+                        Blog: blog_pallet,
+                }
+        );
 
-	#[derive_impl(frame_system::config_preludes::TestDefaultConfig)]
-	impl frame_system::Config for Test {
-		type BaseCallFilter = frame_support::traits::Everything;
-		type BlockWeights = ();
-		type BlockLength = ();
-		type DbWeight = ();
-		type RuntimeOrigin = RuntimeOrigin;
-		type Nonce = u64;
-		type RuntimeCall = RuntimeCall;
-		type Hash = H256;
-		type Hashing = BlakeTwo256;
-		type AccountId = u64;
-		type Lookup = IdentityLookup<Self::AccountId>;
-		type Block = Block;
-		type RuntimeEvent = RuntimeEvent;
-		type BlockHashCount = frame_support::traits::ConstU64<250>;
-		type Version = ();
-		type PalletInfo = PalletInfo;
-		type AccountData = pallet_balances::AccountData<u128>;
-		type OnNewAccount = ();
-		type OnKilledAccount = ();
-		type SystemWeightInfo = ();
-		type SS58Prefix = ();
-		type OnSetCode = ();
-		type MaxConsumers = frame_support::traits::ConstU32<16>;
-	}
+        impl frame_system::Config for Test {
+                type BaseCallFilter = frame_support::traits::Everything;
+                type BlockWeights = ();
+                type BlockLength = ();
+                type DbWeight = ();
+                type RuntimeOrigin = RuntimeOrigin;
+                type Nonce = u64;
+                type RuntimeCall = RuntimeCall;
+                type RuntimeTask = ();
+                type Hash = H256;
+                type Hashing = BlakeTwo256;
+                type AccountId = u64;
+                type Lookup = IdentityLookup<Self::AccountId>;
+                type Block = Block;
+                type RuntimeEvent = RuntimeEvent;
+                type BlockHashCount = ConstU64<250>;
+                type Version = ();
+                type PalletInfo = PalletInfo;
+                type AccountData = pallet_balances::AccountData<u128>;
+                type OnNewAccount = ();
+                type OnKilledAccount = ();
+                type SystemWeightInfo = ();
+                type ExtensionsWeightInfo = ();
+                type SS58Prefix = ();
+                type OnSetCode = ();
+                type MaxConsumers = ConstU32<16>;
+                type SingleBlockMigrations = ();
+                type MultiBlockMigrator = ();
+                type PreInherents = ();
+                type PostInherents = ();
+                type PostTransactions = ();
+        }
 
-	impl pallet_balances::Config for Test {
-		type MaxLocks = frame_support::traits::ConstU32<50>;
-		type MaxReserves = ();
-		type ReserveIdentifier = [u8; 8];
-		type Balance = u128;
-		type RuntimeEvent = RuntimeEvent;
-		type DustRemoval = ();
-		type ExistentialDeposit = frame_support::traits::ConstU128<1>;
-		type AccountStore = System;
-		type WeightInfo = ();
-		type RuntimeHoldReason = ();
-		type RuntimeFreezeReason = ();
-		type FreezeIdentifier = ();
-		type MaxFreezes = ();
-		type DoneSlashHandler = ();
-	}
+        impl pallet_balances::Config for Test {
+                type MaxLocks = ConstU32<50>;
+                type MaxReserves = ConstU32<50>;
+                type ReserveIdentifier = [u8; 8];
+                type Balance = u128;
+                type RuntimeEvent = RuntimeEvent;
+                type DustRemoval = ();
+                type ExistentialDeposit = ConstU128<1>;
+                type AccountStore = System;
+                type WeightInfo = ();
+                type RuntimeHoldReason = ();
+                type RuntimeFreezeReason = ();
+                type FreezeIdentifier = ();
+                type MaxFreezes = ConstU32<50>;
+                type DoneSlashHandler = ();
+        }
 
-	parameter_types! {
-		pub const BlogPalletId: PalletId = PalletId(*b"blogpall");
-		pub const PostCreationFee: u128 = 10;
-		pub const CommentCreationFee: u128 = 1;
-		pub const MaxTitleLength: u32 = 200;
-		pub const MaxContentLength: u32 = 10_000;
-		pub const MaxCommentLength: u32 = 1_000;
-		pub const MaxCommentsPerPost: u32 = 100;
-	}
+        parameter_types! {
+                pub const BlogPalletId: PalletId = PalletId(*b"blogpall");
+                pub const PostCreationFee: u128 = 10;
+                pub const CommentCreationFee: u128 = 1;
+                pub const MaxTitleLength: u32 = 200;
+                pub const MaxContentLength: u32 = 10_000;
+                pub const MaxCommentLength: u32 = 1_000;
+                pub const MaxCommentsPerPost: u32 = 100;
+                pub const MaxTagsPerPost: u32 = 10;
+                pub const MaxTagLength: u32 = 64;
+        }
 
-	impl blog_pallet::Config for Test {
-		type RuntimeEvent = RuntimeEvent;
-		type Currency = Balances;
-		type PalletId = BlogPalletId;
-		type PostCreationFee = PostCreationFee;
-		type CommentCreationFee = CommentCreationFee;
-		type MaxTitleLength = MaxTitleLength;
-		type MaxContentLength = MaxContentLength;
-		type MaxCommentLength = MaxCommentLength;
-		type MaxCommentsPerPost = MaxCommentsPerPost;
-		type WeightInfo = ();
-	}
+        impl blog_pallet::Config for Test {
+                type RuntimeEvent = RuntimeEvent;
+                type Currency = Balances;
+                type PalletId = BlogPalletId;
+                type PostCreationFee = PostCreationFee;
+                type CommentCreationFee = CommentCreationFee;
+                type MaxTitleLength = MaxTitleLength;
+                type MaxContentLength = MaxContentLength;
+                type MaxCommentLength = MaxCommentLength;
+                type MaxCommentsPerPost = MaxCommentsPerPost;
+                type MaxTagsPerPost = MaxTagsPerPost;
+                type MaxTagLength = MaxTagLength;
+                type WeightInfo = ();
+        }
 
-	// Build genesis storage according to the mock runtime.
-	pub fn new_test_ext() -> sp_io::TestExternalities {
+	fn new_test_ext() -> sp_io::TestExternalities {
+		// Build genesis storage according to the mock runtime.
 		let mut storage = frame_system::GenesisConfig::<Test>::default()
 			.build_storage()
-			.unwrap();
+			.expect("Frame system default genesis config is valid");
 
-		// Thêm balance cho các test accounts
 		pallet_balances::GenesisConfig::<Test> {
-			balances: vec![
-				(1, 1000),
-				(2, 1000),
-				(3, 1000),
-			],
+			balances: vec![(1, 1000), (2, 1000), (3, 1000)],
+			dev_accounts: Default::default(),
+			..Default::default()
 		}
 		.assimilate_storage(&mut storage)
-		.unwrap();
+		.expect("Balance genesis config assimilates into storage");
 
-		storage.into()
+		let mut ext = sp_io::TestExternalities::new(storage);
+		ext.execute_with(|| System::set_block_number(1));
+		ext
 	}
 
 	#[test]
@@ -367,4 +375,3 @@ mod tests {
 		});
 	}
 }
-
