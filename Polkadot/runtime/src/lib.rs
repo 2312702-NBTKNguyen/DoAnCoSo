@@ -182,7 +182,8 @@ pub const MILLI_UNIT: Balance = 1_000_000_000;
 pub const MICRO_UNIT: Balance = 1_000_000;
 
 /// The existential deposit. Set to 1/10 of the Connected Relay Chain.
-pub const EXISTENTIAL_DEPOSIT: Balance = MILLI_UNIT;
+/// Lowered for development testing
+pub const EXISTENTIAL_DEPOSIT: Balance = MICRO_UNIT; // Changed from MILLI_UNIT to MICRO_UNIT
 
 const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(5);
 
