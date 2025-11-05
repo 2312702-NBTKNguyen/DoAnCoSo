@@ -21,7 +21,7 @@ fn set_block_number<T: Config>(block: u32) {
 
 fn fund_account<T: Config>(account: &T::AccountId) {
 	let deposit: BalanceOf<T> = 1_000_000_000u128.saturated_into();
-	T::Currency::deposit_creating(account, deposit);
+	let _imbalance = T::Currency::deposit_creating(account, deposit);
 }
 
 fn default_title<T: Config>() -> Vec<u8> {
@@ -265,4 +265,3 @@ mod benchmarks {
 
 	impl_benchmark_test_suite!(Pallet, crate::mock::new_test_ext(), crate::mock::Test);
 }
-
