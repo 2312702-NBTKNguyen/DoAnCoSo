@@ -31,12 +31,12 @@
 #![allow(unused_imports)]
 #![allow(missing_docs)]
 
-use frame_support::{traits::Get, weights::Weight};
 use core::marker::PhantomData;
+use frame_support::{traits::Get, weights::Weight};
 
 /// Weight functions for `blog_pallet`.
-pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> blog_pallet::WeightInfo for WeightInfo<T> {
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> crate::WeightInfo for SubstrateWeight<T> {
 	/// Storage: `System::Account` (r:1 w:1)
 	/// Proof: `System::Account` (`max_values`: None, `max_size`: Some(128), added: 2603, mode: `MaxEncodedLen`)
 	/// Storage: `Blog::NextPostId` (r:1 w:1)
@@ -203,4 +203,41 @@ impl<T: frame_system::Config> blog_pallet::WeightInfo for WeightInfo<T> {
 			.saturating_add(T::DbWeight::get().reads(3))
 			.saturating_add(T::DbWeight::get().writes(3))
 	}
+}
+
+/// Weight functions for tests and backwards compatibility.
+impl crate::WeightInfo for () {
+ fn create_post() -> Weight {
+  Weight::zero()
+ }
+ fn update_post() -> Weight {
+  Weight::zero()
+ }
+ fn delete_post() -> Weight {
+  Weight::zero()
+ }
+ fn create_comment() -> Weight {
+  Weight::zero()
+ }
+ fn update_comment() -> Weight {
+  Weight::zero()
+ }
+ fn delete_comment() -> Weight {
+  Weight::zero()
+ }
+ fn toggle_post_like() -> Weight {
+  Weight::zero()
+ }
+ fn toggle_comment_like() -> Weight {
+  Weight::zero()
+ }
+ fn add_tags() -> Weight {
+  Weight::zero()
+ }
+ fn toggle_bookmark() -> Weight {
+  Weight::zero()
+ }
+ fn toggle_follow() -> Weight {
+  Weight::zero()
+ }
 }

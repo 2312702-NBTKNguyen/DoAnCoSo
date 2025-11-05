@@ -34,7 +34,7 @@ use frame_support::{
 	ensure,
 	pallet_prelude::*,
 	traits::{
-		ConstU32, Currency, ExistenceRequirement, Get, IsType, Len, OnRuntimeUpgrade,
+		ConstU32, Currency, ExistenceRequirement, Get, IsType, OnRuntimeUpgrade,
 		ReservableCurrency, StorageVersion,
 	},
 	BoundedVec,
@@ -122,6 +122,21 @@ pub mod pallet {
 
 	/// AccountId type alias
 	type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
+
+	/// Weight functions required by the pallet extrinsics
+	pub trait WeightInfo {
+		fn create_post() -> Weight;
+		fn update_post() -> Weight;
+		fn delete_post() -> Weight;
+		fn create_comment() -> Weight;
+		fn update_comment() -> Weight;
+		fn delete_comment() -> Weight;
+		fn toggle_post_like() -> Weight;
+		fn toggle_comment_like() -> Weight;
+		fn add_tags() -> Weight;
+		fn toggle_bookmark() -> Weight;
+		fn toggle_follow() -> Weight;
+	}
 
 	const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
@@ -534,10 +549,7 @@ pub mod pallet {
 		///
 		/// Yêu cầu phí từ tác giả để tạo bài viết.
 		#[pallet::call_index(0)]
-		#[pallet::weight(T::WeightInfo::create_post(
-			Len::len(&title) as u32,
-			Len::len(&content) as u32
-		))]
+		#[pallet::weight(T::WeightInfo::create_post())]
 		pub fn create_post(
 			origin: OriginFor<T>,
 			title: Vec<u8>,
@@ -603,10 +615,7 @@ pub mod pallet {
 		///
 		/// Chỉ tác giả của bài viết mới có thể cập nhật.
 		#[pallet::call_index(1)]
-		#[pallet::weight(T::WeightInfo::update_post(
-			Len::len(&title) as u32,
-			Len::len(&content) as u32
-		))]
+		#[pallet::weight(T::WeightInfo::update_post())]
 		pub fn update_post(
 			origin: OriginFor<T>,
 			post_id: PostId,
@@ -688,7 +697,7 @@ pub mod pallet {
 
 		/// Thêm bình luận vào bài viết
 		#[pallet::call_index(3)]
-		#[pallet::weight(T::WeightInfo::create_comment(content.len() as u32))]
+		#[pallet::weight(T::WeightInfo::create_comment())]
 		pub fn create_comment(
 			origin: OriginFor<T>,
 			post_id: PostId,
@@ -759,7 +768,7 @@ pub mod pallet {
 
 		/// Cập nhật bình luận
 		#[pallet::call_index(4)]
-		#[pallet::weight(T::WeightInfo::update_comment(content.len() as u32))]
+		#[pallet::weight(T::WeightInfo::update_comment())]
 		pub fn update_comment(
 			origin: OriginFor<T>,
 			comment_id: CommentId,
@@ -925,7 +934,7 @@ pub mod pallet {
 
 		/// Thêm tags cho bài viết (chỉ tác giả mới có thể thêm)
 		#[pallet::call_index(8)]
-		#[pallet::weight(T::WeightInfo::add_tags(Len::len(&tags) as u32))]
+		#[pallet::weight(T::WeightInfo::add_tags())]
 		pub fn add_tags(
 			origin: OriginFor<T>,
 			post_id: PostId,
