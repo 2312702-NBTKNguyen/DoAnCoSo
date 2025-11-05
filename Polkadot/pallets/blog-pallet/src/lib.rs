@@ -34,12 +34,14 @@ use frame_support::{
 	ensure,
 	pallet_prelude::*,
 	traits::{
-		ConstU32, Currency, ExistenceRequirement, Get, IsType, Len, ReservableCurrency,
+		ConstU32, Currency, ExistenceRequirement, Get, IsType, Len, OnRuntimeUpgrade,
+		ReservableCurrency, StorageVersion,
 	},
 	BoundedVec,
 	PalletId,
 	weights::Weight,
 };
+
 use frame_system::pallet_prelude::*;
 use sp_runtime::{
 	traits::AccountIdConversion,
@@ -121,7 +123,10 @@ pub mod pallet {
 	/// AccountId type alias
 	type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 
+	const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
+
 	#[pallet::pallet]
+	#[pallet::storage_version(STORAGE_VERSION)]
 	#[pallet::without_storage_info]
 	pub struct Pallet<T>(core::marker::PhantomData<T>);
 
@@ -295,6 +300,73 @@ pub mod pallet {
 		ValueQuery,
 	>;
 
+	pub mod migrations {
+		use super::*;
+		use core::marker::PhantomData;
+		use frame_support::weights::Weight;
+
+		#[cfg(feature = "try-runtime")]
+		use codec::{Decode, Encode};
+
+		pub struct V0ToV1<T>(PhantomData<T>);
+
+		impl<T: Config> OnRuntimeUpgrade for V0ToV1<T> {
+			fn on_runtime_upgrade() -> Weight {
+				if <Pallet<T>>::on_chain_storage_version() >= STORAGE_VERSION {
+					return Weight::zero();
+				}
+
+				let mut reads: u64 = 0;
+				let mut writes: u64 = 0;
+
+				Posts::<T>::translate::<PostV1<AccountIdOf<T>, BlockNumberFor<T>>, _>(
+					|post_id, old| {
+						reads = reads.saturating_add(1);
+						let like_count = PostLikes::<T>::get(&post_id);
+						reads = reads.saturating_add(1);
+
+						let new_post = Post {
+							id: old.id,
+							author: old.author,
+							title: old.title,
+							content: old.content,
+							created_at: old.created_at,
+							updated_at: old.updated_at,
+							is_deleted: old.is_deleted,
+							likes: like_count,
+						};
+
+						writes = writes.saturating_add(1);
+						Some(new_post)
+					},
+				);
+
+				STORAGE_VERSION.put::<Pallet<T>>();
+				writes = writes.saturating_add(1);
+
+				T::DbWeight::get().reads_writes(reads, writes)
+			}
+
+			#[cfg(feature = "try-runtime")]
+			fn pre_upgrade() -> Result<Vec<u8>, sp_runtime::TryRuntimeError> {
+				let post_count = Posts::<T>::iter().count() as u64;
+				Ok(post_count.encode())
+			}
+
+			#[cfg(feature = "try-runtime")]
+			fn post_upgrade(state: Vec<u8>) -> Result<(), sp_runtime::TryRuntimeError> {
+				let count_before = u64::decode(&mut &state[..])
+					.map_err(|_| "Failed to decode pre-upgrade post count")?;
+				let count_after = Posts::<T>::iter().count() as u64;
+				frame_support::ensure!(
+					count_before == count_after,
+					"Post count mismatch after migration",
+				);
+				Ok(())
+			}
+		}
+	}
+
 	/// Events được phát ra từ pallet
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -451,7 +523,7 @@ pub mod pallet {
 		}
 
 		fn on_runtime_upgrade() -> Weight {
-			Weight::zero()
+			migrations::V0ToV1::<T>::on_runtime_upgrade()
 		}
 	}
 
@@ -506,6 +578,7 @@ pub mod pallet {
 				created_at: now,
 				updated_at: now,
 				is_deleted: false,
+				likes: PostLikes::<T>::get(&post_id),
 			};
 
 			Posts::<T>::insert(post_id, &post);
@@ -775,6 +848,12 @@ pub mod pallet {
 					*likes = likes.saturating_sub(1);
 				});
 
+				Posts::<T>::mutate(post_id, |maybe_post| {
+					if let Some(post) = maybe_post {
+						post.likes = post.likes.saturating_sub(1);
+					}
+				});
+
 				Self::deposit_event(Event::PostUnliked {
 					post_id,
 					user,
@@ -784,6 +863,12 @@ pub mod pallet {
 				PostLikedBy::<T>::insert(&post_id, &user, true);
 				PostLikes::<T>::mutate(&post_id, |likes| {
 					*likes = likes.saturating_add(1);
+				});
+
+				Posts::<T>::mutate(post_id, |maybe_post| {
+					if let Some(post) = maybe_post {
+						post.likes = post.likes.saturating_add(1);
+					}
 				});
 
 				Self::deposit_event(Event::PostLiked {
@@ -1027,7 +1112,24 @@ pub type PostId = u64;
 /// ID bình luận
 pub type CommentId = u64;
 
-/// Cấu trúc bài viết
+/// Dữ liệu bài viết phiên bản cũ (trước khi thêm trường likes)
+#[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo)]
+#[scale_info(skip_type_params(T))]
+pub struct PostV1<AccountId, BlockNumber>
+where
+	AccountId: Clone + PartialEq + Eq,
+	BlockNumber: Clone + PartialEq + Eq,
+{
+	pub id: PostId,
+	pub author: AccountId,
+	pub title: Vec<u8>,
+	pub content: Vec<u8>,
+	pub created_at: BlockNumber,
+	pub updated_at: BlockNumber,
+	pub is_deleted: bool,
+}
+
+/// Cấu trúc bài viết (phiên bản hiện tại)
 #[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo)]
 #[scale_info(skip_type_params(T))]
 pub struct Post<AccountId, BlockNumber>
@@ -1049,6 +1151,8 @@ where
 	pub updated_at: BlockNumber,
 	/// Đã bị xóa chưa (soft delete)
 	pub is_deleted: bool,
+	/// Tổng số lượt like (được migrate từ PostLikes)
+	pub likes: u64,
 }
 
 /// Cấu trúc bình luận
