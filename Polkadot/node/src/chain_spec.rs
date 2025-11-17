@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec = sc_service::GenericChainSpec<Extensions>;
 /// The relay chain that we want to configure this parachain to connect to.
-pub const RELAY_CHAIN: &str = "rococo-local";
+pub const RELAY_CHAIN: &str = "paseo";
 
 /// The extensions for the [`ChainSpec`].
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ChainSpecGroup, ChainSpecExtension)]
