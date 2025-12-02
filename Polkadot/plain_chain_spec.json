@@ -9,7 +9,7 @@
         "balances": {
           "balances": [
             [
-              "139KkGFoNhVN8xNv5yAeCrKrB98qCUt47wegFjk2Lk29u2HF",
+              "5CFQaDZ2JiTbaTwdgW5zLxNBqGMz3i3hTdd2heacCshHxjrz",
               1152921504606846976
             ]
           ]
@@ -17,11 +17,11 @@
         "collatorSelection": {
           "candidacyBond": 16000000,
           "invulnerables": [
-            "139KkGFoNhVN8xNv5yAeCrKrB98qCUt47wegFjk2Lk29u2HF"
+            "5CFQaDZ2JiTbaTwdgW5zLxNBqGMz3i3hTdd2heacCshHxjrz"
           ]
         },
         "parachainInfo": {
-          "parachainId": 5061
+          "parachainId": 5064
         },
         "polkadotXcm": {
           "safeXcmVersion": 5
@@ -29,28 +29,28 @@
         "session": {
           "keys": [
             [
-              "139KkGFoNhVN8xNv5yAeCrKrB98qCUt47wegFjk2Lk29u2HF",
-              "139KkGFoNhVN8xNv5yAeCrKrB98qCUt47wegFjk2Lk29u2HF",
+              "5CFQaDZ2JiTbaTwdgW5zLxNBqGMz3i3hTdd2heacCshHxjrz",
+              "5CFQaDZ2JiTbaTwdgW5zLxNBqGMz3i3hTdd2heacCshHxjrz",
               {
-                "aura": "139KkGFoNhVN8xNv5yAeCrKrB98qCUt47wegFjk2Lk29u2HF"
+                "aura": "5DszevfGHh2dy32hCX4NDmWopAqmDLVtTbZ641J9JqRft6bE"
               }
             ]
           ]
         },
         "sudo": {
-          "key": "139KkGFoNhVN8xNv5yAeCrKrB98qCUt47wegFjk2Lk29u2HF"
+          "key": "5CFQaDZ2JiTbaTwdgW5zLxNBqGMz3i3hTdd2heacCshHxjrz"
         }
       }
     }
   },
-  "id": "DACS_CTK47B",
+  "id": "DACS-CTK47B",
   "name": "ĐỒ ÁN CƠ SỞ - CTK47B",
-  "para_id": 5061,
+  "para_id": 5064,
   "properties": {
     "tokenDecimals": 12,
     "tokenSymbol": "UNIT"
   },
-  "protocolId": null,
+  "protocolId": "paseo",
   "relay_chain": "paseo",
   "telemetryEndpoints": null
 }
